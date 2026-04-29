@@ -1,0 +1,116 @@
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <h1 >My To-Do List</h1>
+
+    <div id="container">
+        <form method="POST" action="{% url 'home' %}" id="form-id">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if form.instance.id %}
+                <input  type="hidden" name="task_id" value="{{form.instance.id}}">
+                <button class='alter-button' name="update_task">Update task</button>
+
+            {% else %}  
+                <button class='alter-button' name='add_task'>Add Task</button>
+            {% endif %}
+        </form>
+            
+        <div id='task-lists'>
+            {% for task in tasks %}
+            <div id='task'>
+                <p id='task-title'>{{ task.tasks }}</p>
+                <form method="POST" action="{% url "home" %}" style='display:inline;'>
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{task.id}}">
+                    <button class='alter-button' name='edit'>✏️</button>
+                </form>
+                <form method="POST" action="{% url "home" %}" style='display:inline;'>
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{task.id}}">
+                    <button class='alter-button' name='delete'>🗑️</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+</body>
+</html> {% endcomment %}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My To-Do List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+    <header>
+        <div class="header-badge">
+            <span class="badge-dot"></span>
+            {{ tasks|length }} task{{ tasks|length|pluralize }}
+        </div>
+        <h1>My To-Do List</h1>
+        <p class="header-sub">stay focused, get things done</p>
+    </header>
+
+    <div id="container">
+
+        <form method="POST" action="{% url 'home' %}" id="form-id">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if form.instance.id %}
+                <input type="hidden" name="task_id" value="{{ form.instance.id }}">
+                <button class="alter-button update-btn" name="update_task">Update</button>
+            {% else %}
+                <button class="alter-button add-btn" name="add_task">+ Add</button>
+            {% endif %}
+        </form>
+
+        <div id="task-lists">
+            {% for task in tasks %}
+            <div class="task" style="--i: {{ forloop.counter }};">
+                <span class="task-number">{{ forloop.counter|stringformat:"02d" }}</span>
+                <p class="task-title">{{ task.tasks }}</p>
+                <div class="task-actions">
+                    <form method="POST" action="{% url 'home' %}" style="display:contents;">
+                        {% csrf_token %}
+                        <input type="hidden" name="task_id" value="{{ task.id }}">
+                        <button class="alter-button edit-btn" name="edit" title="Edit">✏️</button>
+                    </form>
+                    <form method="POST" action="{% url 'home' %}" style="display:contents;">
+                        {% csrf_token %}
+                        <input type="hidden" name="task_id" value="{{ task.id }}">
+                        <button class="alter-button delete-btn" name="delete" title="Delete">🗑️</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <span class="empty-icon">☑</span>
+                <p>No tasks yet — add one above!</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</body>
+</html>
